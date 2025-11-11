@@ -145,7 +145,7 @@ $result = $conn->query("SELECT * FROM projects ORDER BY created_at DESC");
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="project-card">
                             <div class="project-image">
-                                <img src="uploads/<?php echo htmlspecialchars($row['image']); ?> "alt="Project" class="img-fluid">
+                                <img src="uploads/<?php echo htmlspecialchars($row['image']); ?> " alt="Project" class="img-fluid">
                                 <div class="project-overlay">
                                     <div class="project-actions">
                                         <a href="project-details.php?id=<?php echo $row['id']; ?>" class="btn-project">View Details</a>                                </div>
@@ -154,7 +154,7 @@ $result = $conn->query("SELECT * FROM projects ORDER BY created_at DESC");
 
                             <div class="project-info">
                                 <div class="project-category"><h4><?php echo htmlspecialchars($row['name']); ?></h4></div>
-                                <p class="project-description"><p><?php echo htmlspecialchars($row['description']); ?></p>
+                                <p class="project-description"><?php echo htmlspecialchars($row['description']); ?></p>
 
 
                             </div>

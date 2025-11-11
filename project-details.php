@@ -1,21 +1,41 @@
 <?php
 include 'db.php';
-$id = $_GET['id'] ?? 0;
-$stmt = $conn->prepare("SELECT * FROM projects WHERE id = ?");
-$stmt->bind_param("i", $id);
+
+// Güvenlik kontrolü
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    header("Location: projects.php");
+    exit();
+}
+
+$project_id = intval($_GET['id']);
+
+// Ana proje bilgisi
+$sql = "SELECT * FROM projects WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $project_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $project = $result->fetch_assoc();
+
+if (!$project) {
+    header("Location: projects.php");
+    exit();
+}
+
+// Ek görselleri çek
+$images_sql = "SELECT * FROM project_images WHERE project_id = ?";
+$img_stmt = $conn->prepare($images_sql);
+$img_stmt->bind_param("i", $project_id);
+$img_stmt->execute();
+$images_result = $img_stmt->get_result();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Project Details - iConstruction Bootstrap Template</title>
+    <title>Project Details - <?php echo htmlspecialchars($project['name']); ?></title>
     <meta name="description" content="">
     <meta name="keywords" content="">
 
@@ -37,82 +57,41 @@ $project = $result->fetch_assoc();
 
     <!-- Main CSS File -->
     <link href="assets/css/main.css" rel="stylesheet">
-
-    <!-- =======================================================
-    * Template Name: iConstruction
-    * Template URL: https://bootstrapmade.com/iconstruction-bootstrap-construction-template/
-    * Updated: Jul 27 2025 with Bootstrap v5.3.7
-    * Author: BootstrapMade.com
-    * License: https://bootstrapmade.com/license/
-    ======================================================== -->
 </head>
 
 <body class="project-details-page">
 
 <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
-
         <a href="index.php" class="logo d-flex align-items-center me-auto">
-            <!-- Uncomment the line below if you also wish to use an image logo -->
-            <!-- <img src="assets/img/logo.webp" alt=""> -->
             <h1 class="sitename">iConstruction</h1>
         </a>
-
         <nav id="navmenu" class="navmenu">
             <ul>
                 <li><a href="index.php">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="services.html">Services</a></li>
-                <li><a href="projects.html">Projects</a></li>
+                <li><a href="projects.php">Projects</a></li>
                 <li><a href="team.html">Team</a></li>
-                <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                    <ul>
-                        <li><a href="service-details.html">Service Details</a></li>
-                        <li><a href="project-details.html" class="active">Project Details</a></li>
-                        <li><a href="quote.html">Quote Form</a></li>
-                        <li><a href="terms.html">Terms</a></li>
-                        <li><a href="privacy.html">Privacy</a></li>
-                        <li><a href="404.html">404</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                    <ul>
-                        <li><a href="#">Dropdown 1</a></li>
-                        <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                            <ul>
-                                <li><a href="#">Deep Dropdown 1</a></li>
-                                <li><a href="#">Deep Dropdown 2</a></li>
-                                <li><a href="#">Deep Dropdown 3</a></li>
-                                <li><a href="#">Deep Dropdown 4</a></li>
-                                <li><a href="#">Deep Dropdown 5</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Dropdown 2</a></li>
-                        <li><a href="#">Dropdown 3</a></li>
-                        <li><a href="#">Dropdown 4</a></li>
-                    </ul>
-                </li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-
         <a class="btn-getstarted d-none d-sm-block" href="quote.html">Request Quote</a>
-
     </div>
 </header>
 
 <main class="main">
-
     <!-- Page Title -->
     <div class="page-title dark-background" data-aos="fade" style="background-image: url(assets/img/construction/showcase-2.webp);">
         <div class="container position-relative">
-            <h1>Portfolio Details</h1>
-            <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
+            <h1>Project Details</h1>
+            <p><?php echo htmlspecialchars($project['name']); ?> - Project Information</p>
             <nav class="breadcrumbs">
                 <ol>
                     <li><a href="index.php">Home</a></li>
-                    <li class="current">Project Details</li>
+                    <li><a href="projects.php">Projects</a></li>
+                    <li class="current"><?php echo htmlspecialchars($project['name']); ?></li>
                 </ol>
             </nav>
         </div>
@@ -120,13 +99,12 @@ $project = $result->fetch_assoc();
 
     <!-- Project Details Section -->
     <section id="project-details" class="project-details section">
-
         <div class="container" data-aos="fade-up" data-aos-delay="100">
-
             <div class="row">
                 <div class="col-lg-8">
                     <div class="project-hero" data-aos="zoom-out" data-aos-delay="200">
-                        <img src="assets/img/construction/project-8.webp" alt="Luxury Office Complex" class="img-fluid">
+                        <!-- Ana proje resmi buraya gelecek -->
+                        <img src="assets/img/construction/project-8.webp" alt="<?php echo htmlspecialchars($project['name']); ?>" class="img-fluid">
                         <div class="project-hero-overlay">
                             <div class="project-status">Completed</div>
                         </div>
@@ -135,65 +113,62 @@ $project = $result->fetch_assoc();
                 <div class="col-lg-4">
                     <div class="project-info" data-aos="fade-left" data-aos-delay="300">
                         <div class="project-meta">
-
+                            <span class="category">Commercial</span>
                             <span class="location">Downtown Metropolitan</span>
                         </div>
                         <h1 class="project-title"><?php echo htmlspecialchars($project['name']); ?></h1>
-                        <p class="project-description"><?php echo nl2br(htmlspecialchars($project['details'])); ?></p>
-
-
+                        <p class="project-description"><?php echo nl2br(htmlspecialchars($project['description'])); ?></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="project-gallery" data-aos="fade-up" data-aos-delay="400">
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <div class="gallery-item">
-                            <img src="uploads/<?php echo $project['image']; ?> alt="Construction Progress" class="img-fluid" loading="lazy">
-                        </div>
+        <!-- Galeri Bölümü -->
+        <?php if ($images_result->num_rows > 0): ?>
+            <div class="project-gallery section" data-aos="fade-up" data-aos-delay="400">
+                <div class="container">
+                    <h3 class="gallery-title text-center mb-5">Project Gallery</h3>
+                    <div class="row g-4">
+                        <?php while ($img = $images_result->fetch_assoc()): ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="gallery-item">
+                                    <img src="<?php echo htmlspecialchars($img['image']); ?>"
+                                         alt="Project Image"
+                                         class="img-fluid rounded"
+                                         loading="lazy">
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
                     </div>
-
                 </div>
             </div>
+        <?php endif; ?>
 
-            <div class="project-content" data-aos="fade-up" data-aos-delay="500">
+        <!-- Proje Detayları -->
+        <div class="project-content section" data-aos="fade-up" data-aos-delay="500">
+            <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
                         <div class="content-section">
                             <h3>Project Overview</h3>
-                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
-                            <p>Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                            <p><?php echo nl2br(htmlspecialchars($project['details'])); ?></p>
                         </div>
-
-
                     </div>
                 </div>
             </div>
-
-
-
         </div>
-        </div>
-
-        </div>
-
     </section><!-- /Project Details Section -->
-
 </main>
 
 <footer id="footer" class="footer dark-background">
-
     <div class="container">
         <div class="row gy-5">
-
             <div class="col-lg-4">
                 <div class="footer-brand">
                     <a href="index.php" class="logo d-flex align-items-center mb-3">
                         <span class="sitename">iConstruction</span>
                     </a>
                     <p class="tagline">Innovating the digital landscape with elegant solutions and timeless design.</p>
-
                     <div class="social-links mt-4">
                         <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
                         <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
@@ -203,7 +178,6 @@ $project = $result->fetch_assoc();
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-6">
                 <div class="footer-links-grid">
                     <div class="row">
@@ -237,14 +211,12 @@ $project = $result->fetch_assoc();
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-2">
                 <div class="footer-cta">
                     <h5>Let's Connect</h5>
                     <a href="contact.html" class="btn btn-outline">Get in Touch</a>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -253,12 +225,8 @@ $project = $result->fetch_assoc();
             <div class="row">
                 <div class="col-12">
                     <div class="footer-bottom-content">
-                        <p class="mb-0">© <span class="sitename">Myebsite</span>. All rights reserved.</p>
+                        <p class="mb-0">© <span class="sitename">iConstruction</span>. All rights reserved.</p>
                         <div class="credits">
-                            <!-- All the links in the footer should remain intact. -->
-                            <!-- You can delete the links only if you've purchased the pro version. -->
-                            <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
                             Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
                         </div>
                     </div>
@@ -266,7 +234,6 @@ $project = $result->fetch_assoc();
             </div>
         </div>
     </div>
-
 </footer>
 
 <!-- Scroll Top -->
@@ -287,5 +254,4 @@ $project = $result->fetch_assoc();
 <script src="assets/js/main.js"></script>
 
 </body>
-
 </html>
