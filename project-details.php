@@ -104,7 +104,11 @@ $images_result = $img_stmt->get_result();
                 <div class="col-lg-8">
                     <div class="project-hero" data-aos="zoom-out" data-aos-delay="200">
                         <!-- Ana proje resmi buraya gelecek -->
-                        <img src="assets/img/construction/project-8.webp" alt="<?php echo htmlspecialchars($project['name']); ?>" class="img-fluid">
+                        <img src="http://localhost/deneme/uploads/<?php echo htmlspecialchars($project['main_image']); ?>"
+                             alt="<?php echo htmlspecialchars($project['name']); ?>"
+                             class="img-fluid rounded"
+                             onerror="this.src='assets/img/construction/project-8.webp'">
+
                         <div class="project-hero-overlay">
                             <div class="project-status">Completed</div>
                         </div>
@@ -132,10 +136,11 @@ $images_result = $img_stmt->get_result();
                         <?php while ($img = $images_result->fetch_assoc()): ?>
                             <div class="col-lg-4 col-md-6">
                                 <div class="gallery-item">
-                                    <img src="<?php echo htmlspecialchars($img['image']); ?>"
+                                    <img src="http://localhost/deneme/uploads/<?php echo htmlspecialchars($img['image']); ?>"
                                          alt="Project Image"
                                          class="img-fluid rounded"
-                                         loading="lazy">
+                                         loading="lazy"
+                                         onerror="this.src='assets/img/construction/project-3.webp'">
                                 </div>
                             </div>
                         <?php endwhile; ?>
@@ -143,6 +148,7 @@ $images_result = $img_stmt->get_result();
                 </div>
             </div>
         <?php endif; ?>
+
 
         <!-- Proje Detayları -->
         <div class="project-content section" data-aos="fade-up" data-aos-delay="500">
